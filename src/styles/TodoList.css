@@ -1,0 +1,38 @@
+.todo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    border: 1px solid #ccc;
+    padding: 135px 1px 1px;
+    overflow-y: auto;
+}
+
+.title-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.title-container,
+h1 {
+    color: white;
+}
+
+.dark-mode-toggle {
+    border: none;
+    margin-left: 255px;
+    background-color: transparent;
+}
+
+.todo-filter-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.todo-filter-container button {
+    border: 1px solid #ccc;
+    margin: 0 5px;
+}
