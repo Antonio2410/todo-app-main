@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import '../styles/Todo.css';
 import crossIcon from '../images/icon-cross.svg';
 
 const Todo = ({ todo, toggleComplete, deleteTodo }) => {
-    const [showDeleteIcon, setShowDeleteIcon] = useState(true);
-
     return (
-        <div className="todo" onClick={() => setShowDeleteIcon(false)}>
+        <div className="todo">
             <div
                 className={`check-icon ${todo.completed ? 'completed' : ''}`}
                 onClick={() => toggleComplete(todo.id)}
@@ -18,11 +16,9 @@ const Todo = ({ todo, toggleComplete, deleteTodo }) => {
             <span style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
                 {todo.text}
             </span>
-            {showDeleteIcon && (
-                <div className="delete-icon" onClick={(e) => { e.stopPropagation(); deleteTodo(todo.id); }}>
-                    <img src={crossIcon} alt="Delete Icon" />
-                </div>
-            )}
+            <div className="delete-icon" onClick={(e) => { e.stopPropagation(); deleteTodo(todo.id); }}>
+                <img src={crossIcon} alt="Delete Icon" />
+            </div>
         </div>
     );
 };
