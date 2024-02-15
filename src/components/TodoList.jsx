@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import Todo from './Todo';
@@ -68,14 +68,15 @@ const TodoList = () => {
             <TodoForm addTodo={addTodo} />
             <DndProvider backend={HTML5Backend}>
                 {filteredTodos.map((todo, index) => (
-                    <TodoWithDragAndDrop
-                        key={todo.id}
-                        index={index}
-                        todo={todo}
-                        toggleComplete={toggleComplete}
-                        deleteTodo={deleteTodo}
-                        moveTodo={moveTodo}
-                    />
+                    <div key={todo.id}>
+                        <TodoWithDragAndDrop
+                            index={index}
+                            todo={todo}
+                            toggleComplete={toggleComplete}
+                            deleteTodo={deleteTodo}
+                            moveTodo={moveTodo}
+                        />
+                    </div>
                 ))}
             </DndProvider>
             <TodoFilter todos={todos} setFilter={setFilter} clearCompleted={clearCompleted} />
@@ -84,6 +85,8 @@ const TodoList = () => {
 };
 
 const TodoWithDragAndDrop = ({ index, todo, toggleComplete, deleteTodo, moveTodo }) => {
+    const ref = useRef(null);
+
     const [{ isDragging }, drag] = useDrag({
         type: 'TODO',
         item: { index },
@@ -95,7 +98,7 @@ const TodoWithDragAndDrop = ({ index, todo, toggleComplete, deleteTodo, moveTodo
     const [, drop] = useDrop({
         accept: 'TODO',
         hover(item, monitor) {
-            if (!dragRef.current) {
+            if (!ref.current) {
                 return;
             }
             const dragIndex = item.index;
@@ -103,7 +106,7 @@ const TodoWithDragAndDrop = ({ index, todo, toggleComplete, deleteTodo, moveTodo
             if (dragIndex === hoverIndex) {
                 return;
             }
-            const hoverBoundingRect = dragRef.current.getBoundingClientRect();
+            const hoverBoundingRect = ref.current.getBoundingClientRect();
             const hoverMiddleY =
                 (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
             const clientOffset = monitor.getClientOffset();
@@ -119,12 +122,29 @@ const TodoWithDragAndDrop = ({ index, todo, toggleComplete, deleteTodo, moveTodo
         },
     });
 
-    const dragRef = React.useRef(null);
-    drag(drop(dragRef));
+    useEffect(() => {
+        const currentRef = ref.current;
+        if (currentRef) {
+            currentRef.addEventListener('pointerdown', handlePointerDown);
+        }
+        return () => {
+            if (currentRef) {
+                currentRef.removeEventListener('pointerdown', handlePointerDown);
+            }
+        };
+    }, []);
+
+    const handlePointerDown = (event) => {
+        if (ref.current) {
+            ref.current.setPointerCapture(event.pointerId);
+        }
+    };
+
+    drag(drop(ref));
 
     return (
         <div
-            ref={dragRef}
+            ref={ref}
             style={{
                 opacity: isDragging ? 0.5 : 1,
                 cursor: 'move',
